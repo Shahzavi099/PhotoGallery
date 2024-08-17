@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery;
+package com.shahzavi.android.photogallery;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,7 +7,6 @@ import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
-import android.app.job.JobWorkItem;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,13 +15,10 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import java.util.Collections;
 import java.util.List;
 
 public class PollService1 extends JobService {

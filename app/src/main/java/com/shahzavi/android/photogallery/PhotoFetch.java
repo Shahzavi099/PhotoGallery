@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery;
+package com.shahzavi.android.photogallery;
 
 import android.content.Context;
 import android.net.Uri;
@@ -25,7 +25,6 @@ public class PhotoFetch {
     public interface VolleyCallback{
         void onSuccess(List<GalleryItem> items);
     }
-    List<GalleryItem> mItems=new ArrayList<>();
     private final static String TAG="PhotoFetch";
     private final static String API_KEY="45094413-6eff673412b75b9c8c59e6ecc";
     private static final Uri END_POINT=Uri.parse("https://pixabay.com/api/")

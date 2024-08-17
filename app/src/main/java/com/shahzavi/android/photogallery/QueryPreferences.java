@@ -1,7 +1,6 @@
-package com.bignerdranch.android.photogallery;
+package com.shahzavi.android.photogallery;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 
 public class QueryPreferences {
     private static final String PREF_SEARCH_QUERY="searchQuery";
