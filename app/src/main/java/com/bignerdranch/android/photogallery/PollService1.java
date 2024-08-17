@@ -51,17 +51,16 @@ public class PollService1 extends JobService {
                 if (resultId.equals(lastResultId)) {
                     Log.i(TAG, "got old result:" + resultId);
                 } else {
-                    Log.i(TAG, "got new result:" + resultId);}
+                    Log.i(TAG, "got new result:" + resultId);
                     Resources resources = getResources();
                     Intent i = PhotoGalleryActivity.newIntent(PollService1.this);
                     PendingIntent pi = PendingIntent.getActivity(PollService1.this, 0, i, PendingIntent.FLAG_IMMUTABLE);
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(PollService1.this);
-                    if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-                    {
-                        NotificationChannel notificationChannel=new NotificationChannel(ChannelId,"PhotoGallery", NotificationManager.IMPORTANCE_DEFAULT);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        NotificationChannel notificationChannel = new NotificationChannel(ChannelId, "PhotoGallery", NotificationManager.IMPORTANCE_DEFAULT);
                         notificationManagerCompat.createNotificationChannel(notificationChannel);
                     }
-                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(PollService1.this,ChannelId)
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(PollService1.this, ChannelId)
                             .setTicker(resources.getString(R.string.new_picture_title))
                             .setSmallIcon(android.R.drawable.ic_menu_report_image)
                             .setContentTitle(resources.getString(R.string.new_picture_title))
@@ -76,13 +75,13 @@ public class PollService1 extends JobService {
                         //                                          int[] grantResults)
                         // to handle the case where the user grants the permission. See the documentation
                         // for ActivityCompat#requestPermissions for more details.
-                        Log.d(TAG,"Permission not granted");
+                        Log.d(TAG, "Permission not granted");
                         return;
-                        }
-                    Log.d(TAG,"notifycalled");
+                    }
+                    Log.d(TAG, "notifycalled");
                     notificationManagerCompat.notify(0, notificationBuilder.build());
-                jobFinished(jobParameters,false);
-
+                }
+                    jobFinished(jobParameters, false);
                 QueryPreferences.setLastResultId(PollService1.this,resultId);
             }
         });
