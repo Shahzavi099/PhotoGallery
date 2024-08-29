@@ -32,12 +32,17 @@ public class PhotoFetch {
             .appendQueryParameter("key",API_KEY)
             .appendQueryParameter("per_page","100")
             .build();
+
+
+
    public static String getUrlString(String page_no,String query){
     Uri.Builder uriBuilder=END_POINT.buildUpon().appendQueryParameter("page",page_no);
                  if(query!=null)
                    uriBuilder.appendQueryParameter("q",query);
                 return uriBuilder.build().toString();
     }
+
+
     public byte[] getUrlBytes(String urlSpec) throws IOException//Downloading the bytes of data stored at the url
     {
         URL url=new URL(urlSpec);

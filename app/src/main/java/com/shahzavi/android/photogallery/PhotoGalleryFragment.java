@@ -1,5 +1,6 @@
 package com.shahzavi.android.photogallery;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,7 +36,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends VisibleFragment {
     public static int page_no=1;
     private final static String TAG="PhotoGalleryFragment";
     PhotoAdapter mPhotoAdapter;
@@ -61,7 +62,7 @@ public class PhotoGalleryFragment extends Fragment {
             @Override
             public void onThumbnailDownload(PhotoHolder target, Bitmap thumbnail) {
                 Drawable drawable=new BitmapDrawable(getResources(),thumbnail);
-                target.bindGalleryItems(drawable);
+                target.bindDrawable(drawable);
             }
         });
         mThumbnailDownloader.start();
@@ -151,7 +152,7 @@ public class PhotoGalleryFragment extends Fragment {
     public  void fetchItems(String url)
     {
         Log.d(TAG,"fetching for url; "+url);
-        JsonObjectRequest jsonArrayRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG,"onResponseCalled");//https://jsonplaceholder.typicode.com/todos/1
@@ -163,6 +164,7 @@ public class PhotoGalleryFragment extends Fragment {
                         galleryItem.setCaption(jsonObject.getString("tags"));
                         galleryItem.setId(jsonObject.getString("id"));
                         galleryItem.setUrl(jsonObject.getString("previewURL"));
+                        galleryItem.setPageUrl(jsonObject.getString("pageURL"));
                        mItems.add(galleryItem);
 
                     }
@@ -180,8 +182,8 @@ public class PhotoGalleryFragment extends Fragment {
                 Log.e(TAG,"error occured");
             }
         });
-        jsonArrayRequest.setTag(TAG);
-        SingletonClass.newInstance(getActivity()).getRequestQueue().add(jsonArrayRequest);
+        jsonObjectRequest.setTag(TAG);
+        SingletonClass.newInstance(getActivity()).getRequestQueue().add(jsonObjectRequest);
     }
 
     @Nullable
@@ -218,16 +220,31 @@ public class PhotoGalleryFragment extends Fragment {
     private  class PhotoHolder extends RecyclerView.ViewHolder
     {
        private ImageView mImageView;
+        private GalleryItem mGalleryItem;
 
         public PhotoHolder(@NonNull View itemView) {
             super(itemView);
             mImageView=(ImageView) itemView.findViewById(R.id.fragment_photo_gallery_imageview);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i=PhotoPageActivity.newIntent(getActivity(),mGalleryItem.getPageUrl());
+                    startActivity(i);
+                }
+            });
         }
-        public  void bindGalleryItems(Drawable drawable)
+        public  void bindDrawable(Drawable drawable)
         {
          mImageView.setImageDrawable(drawable);
         }
+        public void bindGalleryItems(GalleryItem galleryItem)
+        {
+            mGalleryItem=galleryItem;
+        }
     }
+
+
+
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder>
     {
         List<GalleryItem> galleryItemList;
@@ -246,8 +263,9 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder holder, int position) {
             GalleryItem galleryItem=galleryItemList.get(position);
-            Drawable resorce= ContextCompat.getDrawable(getActivity(),R.drawable.ic_action_name);
-            holder.bindGalleryItems(resorce);
+            holder.bindGalleryItems(galleryItem);
+            Drawable resorce= ContextCompat.getDrawable(getActivity(),R.drawable.ic_action_name);//you can access yoyr app resources from the context
+            holder.bindDrawable(resorce);
             mThumbnailDownloader.queueThumbnail(holder,galleryItem.getUrl());
         }
         @Override
@@ -259,8 +277,8 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mThumbnailDownloader.quit();
         mThumbnailDownloader.clearQueue();
+        mThumbnailDownloader.quit();
         SingletonClass.newInstance(getActivity()).getRequestQueue().cancelAll(TAG);
     }
     public void updateItems()

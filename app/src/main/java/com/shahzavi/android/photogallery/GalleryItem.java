@@ -1,11 +1,14 @@
 package com.shahzavi.android.photogallery;
 
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
 
 public class GalleryItem {
     private String mCaption;
     private String mId;
     private String mUrl;
+    private String pageUrl;
 
     @NonNull
     @Override
@@ -35,5 +38,13 @@ public class GalleryItem {
 
     public void setUrl(String url) {
         mUrl = url;
+    }
+
+    public Uri getPageUrl() {
+        return Uri.parse(pageUrl);
+    }
+
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
     }
 }

@@ -7,6 +7,7 @@ public class QueryPreferences {
     private static final String PREF_LAST_RESULT="lastResultId";
             public static  String getStoredQuery(Context context) {
                 return context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE).getString(PREF_SEARCH_QUERY, null);
+                //you can call this method from any context of your app
             }
             public static void setStoredQuery(Context context,String query)
             {

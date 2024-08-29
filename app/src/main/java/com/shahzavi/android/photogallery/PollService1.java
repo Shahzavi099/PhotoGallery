@@ -1,5 +1,7 @@
 package com.shahzavi.android.photogallery;
 
+import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,6 +28,10 @@ public class PollService1 extends JobService {
     private static final String ChannelId="PollService";
     public static final String TAG = "PollService";
     private static final int POLL_INTERVAL = 1000 * 60 * 15;
+    public static  final String ACTION_SHOW_NOTIFICATION="com.shahzavi.photogallery.SHOW_NOTIFICATION";
+    public static  final String PREM_PRIVATE="com.shahzavi.android.photogallery.PRIVATE";
+    public static final String REQUEST_CODE="REQUEST_CODE";
+    public static final String NOTIFICATION="NOTIFICATION";
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
@@ -63,25 +69,20 @@ public class PollService1 extends JobService {
                             .setContentText(resources.getString(R.string.new_picture_text))
                             .setContentIntent(pi)
                             .setAutoCancel(true);
-                    if (ActivityCompat.checkSelfPermission(PollService1.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        Log.d(TAG, "Permission not granted");
-                        return;
-                    }
-                    Log.d(TAG, "notifycalled");
-                    notificationManagerCompat.notify(0, notificationBuilder.build());
+                    showBackgroundNotification(0, notificationBuilder.build());// the app  that have this permission can recieve this broadcast intent
                 }
-                    jobFinished(jobParameters, false);
                 QueryPreferences.setLastResultId(PollService1.this,resultId);
+                jobFinished(jobParameters, false);
             }
         });
 return true;
+    }
+    private void showBackgroundNotification(int requestCode, Notification notification)
+    {
+        Intent i=new Intent(ACTION_SHOW_NOTIFICATION);
+        i.putExtra(REQUEST_CODE,requestCode);
+        i.putExtra(NOTIFICATION,notification);
+        sendOrderedBroadcast(i,PREM_PRIVATE,null,null, Activity.RESULT_OK,null,null);
     }
 
     @Override
@@ -92,6 +93,7 @@ return true;
     public static void setJobScheduler(Context context,boolean isOn) {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         if (isOn) {
+            Log.d(TAG,"job set");
             JobInfo jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(context, PollService1.class))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                     .setPeriodic(POLL_INTERVAL)
@@ -101,6 +103,7 @@ return true;
         }
         else {
             jobScheduler.cancel(JOB_ID);
+            Log.d(TAG,"job cancel");
         }
     }
     public static boolean isJobSchedulerOn(Context context)
